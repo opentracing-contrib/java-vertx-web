@@ -44,6 +44,14 @@
     <version.io.vertx>3.4.1</version.io.vertx>
     <version.junit>4.12</version.junit>
     <version.com.jayway.awaitility-awaitility>3.0.0</version.com.jayway.awaitility-awaitility>
+
+    <!-- plugins -->
+    <version.maven-deploy-plugin>2.8.2</version.maven-deploy-plugin>
+    <version.maven-release-plugin>2.5.3</version.maven-release-plugin>
+    <version.maven-source-plugin>3.0.1</version.maven-source-plugin>
+    <version.maven-javadoc-plugin>2.10.4</version.maven-javadoc-plugin>
+    <version.io.takari-maven>0.3.4</version.io.takari-maven>
+    <version.io.zikin.centralsync-maven-plugin>0.1.0</version.io.zikin.centralsync-maven-plugin>
   </properties>
 
   <dependencyManagement>
