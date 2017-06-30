@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.opentracing.contrib</groupId>
-  <artifactId>opentracing-vertx-web-parent</artifactId>
+  <artifactId>opentracing-vertx-parent</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
@@ -41,7 +41,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <version.io.opentracing>0.30.0</version.io.opentracing>
-    <version.io.vertx>3.4.1</version.io.vertx>
+    <version.io.vertx>3.4.2</version.io.vertx>
     <version.junit>4.12</version.junit>
     <version.com.jayway.awaitility-awaitility>3.0.0</version.com.jayway.awaitility-awaitility>
 
@@ -53,6 +53,10 @@
     <version.io.takari-maven>0.3.4</version.io.takari-maven>
     <version.io.zikin.centralsync-maven-plugin>0.1.0</version.io.zikin.centralsync-maven-plugin>
   </properties>
+
+  <modules>
+    <module>opentracing-vertx-web</module>
+  </modules>
 
   <dependencyManagement>
     <dependencies>
