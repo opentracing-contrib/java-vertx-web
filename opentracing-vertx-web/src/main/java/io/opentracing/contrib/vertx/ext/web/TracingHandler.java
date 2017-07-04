@@ -24,7 +24,7 @@ import io.vertx.ext.web.RoutingContext;
  */
 public class TracingHandler implements Handler<RoutingContext> {
     private static final Logger log = LoggerFactory.getLogger(TracingHandler.class);
-    public static final String ACTIVE_SEVER_SPAN = TracingHandler.class.getName() + ".severSpan";
+    public static final String CURRENT_SPAN = TracingHandler.class.getName() + ".severSpan";
 
     private final Tracer tracer;
     private final List<WebSpanDecorator> decorators;
@@ -49,7 +49,7 @@ public class TracingHandler implements Handler<RoutingContext> {
 
     protected void handlerNormal(RoutingContext routingContext) {
         // reroute
-        Object object = routingContext.get(ACTIVE_SEVER_SPAN);
+        Object object = routingContext.get(CURRENT_SPAN);
         if (object != null) {
             Span span = (Span) object;
             decorators.forEach(spanDecorator ->
@@ -72,13 +72,13 @@ public class TracingHandler implements Handler<RoutingContext> {
         decorators.forEach(spanDecorator ->
                 spanDecorator.onRequest(routingContext.request(), span));
 
-        routingContext.put(ACTIVE_SEVER_SPAN, span);
+        routingContext.put(CURRENT_SPAN, span);
         routingContext.addBodyEndHandler(finishEndHandler(routingContext, span));
         routingContext.next();
     }
 
     protected void handlerFailure(RoutingContext routingContext) {
-        Object object = routingContext.get(ACTIVE_SEVER_SPAN);
+        Object object = routingContext.get(CURRENT_SPAN);
         final Span span = object instanceof Span ? (Span) object : null;
         if (span != null) {
             routingContext.addBodyEndHandler(event -> decorators.forEach(spanDecorator ->
@@ -105,12 +105,12 @@ public class TracingHandler implements Handler<RoutingContext> {
     public static SpanContext serverSpanContext(RoutingContext routingContext) {
         SpanContext serverContext = null;
 
-        Object object = routingContext.get(ACTIVE_SEVER_SPAN);
+        Object object = routingContext.get(CURRENT_SPAN);
         if (object instanceof Span) {
             Span span = (Span) object;
             serverContext = span.context();
         } else {
-            log.error("severSpanContext is null or not an instance of SpanContext");
+            log.error("Sever SpanContext is null or not an instance of SpanContext");
         }
 
         return serverContext;

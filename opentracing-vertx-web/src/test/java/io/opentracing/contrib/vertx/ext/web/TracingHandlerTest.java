@@ -295,7 +295,7 @@ public class TracingHandlerTest extends WebTestBase {
     @Test
     public void testTimeoutHandler() throws Exception {
         {
-           router.route().handler(TimeoutHandler.create(300, 501));
+            router.route().handler(TimeoutHandler.create(300, 501));
 
             router.route("/timeout")
                     .blockingHandler(routingContext -> {
