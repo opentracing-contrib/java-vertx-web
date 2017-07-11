@@ -55,7 +55,7 @@ public interface WebSpanDecorator {
     class StandardTags implements WebSpanDecorator {
         @Override
         public void onRequest(HttpServerRequest request, BaseSpan<?> span) {
-            Tags.COMPONENT.set(span, "java-vertx");
+            Tags.COMPONENT.set(span, "vertx");
             Tags.HTTP_METHOD.set(span, request.method().toString());
             Tags.HTTP_URL.set(span, request.absoluteURI());
         }
@@ -65,6 +65,7 @@ public interface WebSpanDecorator {
             Map<String, String> logs = new HashMap<>(2);
             logs.put("event", "reroute");
             logs.put(Tags.HTTP_URL.getKey(), request.absoluteURI());
+            logs.put(Tags.HTTP_METHOD.getKey(), request.method().toString());
             span.log(logs);
         }
 

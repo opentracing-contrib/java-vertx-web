@@ -50,7 +50,7 @@ public class TracingHandler implements Handler<RoutingContext> {
     protected void handlerNormal(RoutingContext routingContext) {
         // reroute
         Object object = routingContext.get(CURRENT_SPAN);
-        if (object != null) {
+        if (object instanceof Span) {
             Span span = (Span) object;
             decorators.forEach(spanDecorator ->
                     spanDecorator.onReroute(routingContext.request(), span));
@@ -79,8 +79,8 @@ public class TracingHandler implements Handler<RoutingContext> {
 
     protected void handlerFailure(RoutingContext routingContext) {
         Object object = routingContext.get(CURRENT_SPAN);
-        final Span span = object instanceof Span ? (Span) object : null;
-        if (span != null) {
+        if (object instanceof Span) {
+            final Span span = (Span)object;
             routingContext.addBodyEndHandler(event -> decorators.forEach(spanDecorator ->
                     spanDecorator.onFailure(routingContext.failure(), routingContext.response(), span)));
         }

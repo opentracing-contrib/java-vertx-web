@@ -79,7 +79,7 @@ public class TracingHandlerTest extends WebTestBase {
         Assert.assertEquals("GET", mockSpan.operationName());
         Assert.assertEquals(5, mockSpan.tags().size());
         Assert.assertEquals(Tags.SPAN_KIND_SERVER, mockSpan.tags().get(Tags.SPAN_KIND.getKey()));
-        Assert.assertEquals("java-vertx", mockSpan.tags().get(Tags.COMPONENT.getKey()));
+        Assert.assertEquals("vertx", mockSpan.tags().get(Tags.COMPONENT.getKey()));
         Assert.assertEquals(200, mockSpan.tags().get(Tags.HTTP_STATUS.getKey()));
         Assert.assertEquals("GET", mockSpan.tags().get(Tags.HTTP_METHOD.getKey()));
         Assert.assertEquals("http://localhost:8080/hello", mockSpan.tags().get(Tags.HTTP_URL.getKey()));
@@ -115,10 +115,12 @@ public class TracingHandlerTest extends WebTestBase {
         Assert.assertEquals("GET", mockSpan.tags().get(Tags.HTTP_METHOD.getKey()));
         Assert.assertEquals("http://localhost:8080/route1", mockSpan.tags().get(Tags.HTTP_URL.getKey()));
         Assert.assertEquals(1, mockSpan.logEntries().size());
-        Assert.assertEquals(2, mockSpan.logEntries().get(0).fields().size());
+        Assert.assertEquals(3, mockSpan.logEntries().get(0).fields().size());
         Assert.assertEquals("reroute", mockSpan.logEntries().get(0).fields().get("event"));
         Assert.assertEquals("http://localhost:8080/route2",
                 mockSpan.logEntries().get(0).fields().get(Tags.HTTP_URL.getKey()));
+        Assert.assertEquals("GET",
+            mockSpan.logEntries().get(0).fields().get(Tags.HTTP_METHOD.getKey()));
     }
 
     @Test
