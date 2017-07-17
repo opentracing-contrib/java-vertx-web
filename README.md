@@ -5,7 +5,13 @@ OpenTracing instrumentation for Vert.x Web project. This repository currently co
 handler which traces server requests.
 
 ## Configuration
+```java
+TracingHandler handler = new TracingHandler(tracer);
+router.route()
+        .order(-1).handler(handler)
+        .failureHandler(handler);
 
+```
 
 ## Development
 ```shell

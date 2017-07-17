@@ -41,7 +41,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <version.io.opentracing>0.30.0</version.io.opentracing>
-    <version.io.vertx>3.4.1</version.io.vertx>
+    <version.io.vertx>3.4.2</version.io.vertx>
     <version.junit>4.12</version.junit>
     <version.com.jayway.awaitility-awaitility>3.0.0</version.com.jayway.awaitility-awaitility>
 
@@ -53,6 +53,10 @@
     <version.io.takari-maven>0.3.4</version.io.takari-maven>
     <version.io.zikin.centralsync-maven-plugin>0.1.0</version.io.zikin.centralsync-maven-plugin>
   </properties>
+
+  <modules>
+    <module>opentracing-vertx-web</module>
+  </modules>
 
   <dependencyManagement>
     <dependencies>
