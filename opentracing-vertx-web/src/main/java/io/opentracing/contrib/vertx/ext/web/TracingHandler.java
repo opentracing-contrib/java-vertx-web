@@ -73,6 +73,8 @@ public class TracingHandler implements Handler<RoutingContext> {
                 spanDecorator.onRequest(routingContext.request(), span));
 
         routingContext.put(CURRENT_SPAN, span);
+        // TODO it's not guaranteed that body end handler is always called
+        // https://github.com/vert-x3/vertx-web/issues/662
         routingContext.addBodyEndHandler(finishEndHandler(routingContext, span));
         routingContext.next();
     }
