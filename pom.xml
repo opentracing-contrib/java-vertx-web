@@ -13,9 +13,9 @@
   <url>https://github.com/opentracing-contrib/java-vertx-web</url>
 
   <scm>
-    <url>https://github.com/opentracing-contrib/java-okhttp</url>
-    <connection>scm:git:https://github.com/opentracing-contrib/java-okhttp.git</connection>
-    <developerConnection>scm:git:https://github.com/opentracing-contrib/java-okhttp.git</developerConnection>
+    <url>https://github.com/opentracing-contrib/java-vertx-web</url>
+    <connection>scm:git:https://github.com/opentracing-contrib/java-vertx-web.git</connection>
+    <developerConnection>scm:git:https://github.com/opentracing-contrib/java-vertx-web.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
