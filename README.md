@@ -1,6 +1,6 @@
 [![Build Status][ci-img]][ci] [![Released Version][maven-img]][maven]
 
-# OpenTracing Vert.X Web Instrumentation
+# OpenTracing Vert.x Web Instrumentation
 OpenTracing instrumentation for Vert.x Web project. This repository currently contains
 handler which traces server requests.
 
