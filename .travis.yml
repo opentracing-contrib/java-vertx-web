@@ -24,10 +24,10 @@ branches:
 
 jobs:
   include:
-    - stage: test
+    - stage: test Vert.x 3.3.0, 3.4.0, 3.5.0.Beta1
       script: ./mvnw clean test -Dversion.io.vertx=3.3.0
-      script: ./mvnw clean test -Dversion.io.vertx=3.4.0
-      script: ./mvnw clean test -Dversion.io.vertx=3.5.0.Beta1
+    - script: ./mvnw clean test -Dversion.io.vertx=3.4.0
+    - script: ./mvnw clean test -Dversion.io.vertx=3.5.0.Beta1
     - stage: deploy
       script: ./travis/publish.sh
 
