@@ -18,16 +18,18 @@ before_install:
   - git config credential.helper "store --file=.git/credentials"
   - echo "https://$GH_TOKEN:@github.com" > .git/credentials
 
-install:
-  # Override default travis to use the maven wrapper
-  - ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-
-script:
-  - ./travis/publish.sh
-
 branches:
   except:
     - /^[0-9]/
+
+jobs:
+  include:
+    - stage: test Vert.x 3.3.0, 3.4.0, 3.5.0.Beta1
+      script: ./mvnw clean test -Dversion.io.vertx=3.3.0
+    - script: ./mvnw clean test -Dversion.io.vertx=3.4.0
+    - script: ./mvnw clean test -Dversion.io.vertx=3.5.0.Beta1
+    - stage: deploy
+      script: ./travis/publish.sh
 
 env:
   global:
