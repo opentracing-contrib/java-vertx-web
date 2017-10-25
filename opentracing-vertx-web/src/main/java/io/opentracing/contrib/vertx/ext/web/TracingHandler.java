@@ -64,7 +64,7 @@ public class TracingHandler implements Handler<RoutingContext> {
         SpanContext extractedContext = tracer.extract(Format.Builtin.HTTP_HEADERS,
                 new MultiMapExtractAdapter(routingContext.request().headers()));
 
-        Span span = tracer.buildSpan(routingContext.request().method().toString())
+        Span span = tracer.buildSpan(getOperationName(routingContext))
                 .asChildOf(extractedContext)
                 .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_SERVER)
                 .startManual();
@@ -88,6 +88,11 @@ public class TracingHandler implements Handler<RoutingContext> {
         }
 
         routingContext.next();
+    }
+
+    protected String getOperationName(RoutingContext routingContext) {
+        return String.format("HTTP %s %s", routingContext.request().method().name(),
+                routingContext.request().path());
     }
 
     private Handler<Void> finishEndHandler(RoutingContext routingContext, Span span) {
