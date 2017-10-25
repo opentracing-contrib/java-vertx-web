@@ -40,6 +40,25 @@ public class TracingHandlerTest extends WebTestBase {
     }
 
     @Test
+    public void testPostMethod() throws Exception {
+        {
+            request("/postMethod", HttpMethod.POST, 404);
+            Awaitility.await().until(reportedSpansSize(), IsEqual.equalTo(1));
+        }
+
+        List<MockSpan> mockSpans = mockTracer.finishedSpans();
+        Assert.assertEquals(1, mockSpans.size());
+
+        MockSpan mockSpan = mockSpans.get(0);
+        Assert.assertEquals("HTTP POST /postMethod", mockSpan.operationName());
+        Assert.assertEquals(5, mockSpan.tags().size());
+        Assert.assertEquals(404, mockSpan.tags().get(Tags.HTTP_STATUS.getKey()));
+        Assert.assertEquals("POST", mockSpan.tags().get(Tags.HTTP_METHOD.getKey()));
+        Assert.assertEquals("http://localhost:8080/postMethod", mockSpan.tags().get(Tags.HTTP_URL.getKey()));
+        Assert.assertEquals(0, mockSpan.logEntries().size());
+    }
+
+    @Test
     public void testNoURLMapping() throws Exception {
         {
             request("/noUrlMapping", HttpMethod.GET, 404);
@@ -50,7 +69,7 @@ public class TracingHandlerTest extends WebTestBase {
         Assert.assertEquals(1, mockSpans.size());
 
         MockSpan mockSpan = mockSpans.get(0);
-        Assert.assertEquals("GET", mockSpan.operationName());
+        Assert.assertEquals("HTTP GET /noUrlMapping", mockSpan.operationName());
         Assert.assertEquals(5, mockSpan.tags().size());
         Assert.assertEquals(404, mockSpan.tags().get(Tags.HTTP_STATUS.getKey()));
         Assert.assertEquals("GET", mockSpan.tags().get(Tags.HTTP_METHOD.getKey()));
@@ -76,7 +95,7 @@ public class TracingHandlerTest extends WebTestBase {
         Assert.assertEquals(1, mockSpans.size());
 
         MockSpan mockSpan = mockSpans.get(0);
-        Assert.assertEquals("GET", mockSpan.operationName());
+        Assert.assertEquals("HTTP GET /hello", mockSpan.operationName());
         Assert.assertEquals(5, mockSpan.tags().size());
         Assert.assertEquals(Tags.SPAN_KIND_SERVER, mockSpan.tags().get(Tags.SPAN_KIND.getKey()));
         Assert.assertEquals("vertx", mockSpan.tags().get(Tags.COMPONENT.getKey()));
@@ -109,7 +128,7 @@ public class TracingHandlerTest extends WebTestBase {
         Assert.assertEquals(1, mockSpans.size());
 
         MockSpan mockSpan = mockSpans.get(0);
-        Assert.assertEquals("GET", mockSpan.operationName());
+        Assert.assertEquals("HTTP GET /route1", mockSpan.operationName());
         Assert.assertEquals(5, mockSpan.tags().size());
         Assert.assertEquals(205, mockSpan.tags().get(Tags.HTTP_STATUS.getKey()));
         Assert.assertEquals("GET", mockSpan.tags().get(Tags.HTTP_METHOD.getKey()));
@@ -146,7 +165,7 @@ public class TracingHandlerTest extends WebTestBase {
         Assert.assertEquals(1, mockSpans.size());
 
         MockSpan mockSpan = mockSpans.get(0);
-        Assert.assertEquals("GET", mockSpan.operationName());
+        Assert.assertEquals("HTTP GET /route1", mockSpan.operationName());
         Assert.assertEquals(6, mockSpan.tags().size());
         Assert.assertEquals(Boolean.TRUE, mockSpan.tags().get(Tags.ERROR.getKey()));
         Assert.assertEquals(401, mockSpan.tags().get(Tags.HTTP_STATUS.getKey()));
@@ -181,7 +200,7 @@ public class TracingHandlerTest extends WebTestBase {
         Assert.assertEquals(1, mockSpans.size());
 
         MockSpan mockSpan = mockSpans.get(0);
-        Assert.assertEquals("GET", mockSpan.operationName());
+        Assert.assertEquals("HTTP GET /route", mockSpan.operationName());
         Assert.assertEquals(5, mockSpan.tags().size());
         Assert.assertEquals(205, mockSpan.tags().get(Tags.HTTP_STATUS.getKey()));
         Assert.assertEquals("GET", mockSpan.tags().get(Tags.HTTP_METHOD.getKey()));
@@ -229,7 +248,7 @@ public class TracingHandlerTest extends WebTestBase {
         Assert.assertEquals(1, mockSpans.size());
 
         MockSpan mockSpan = mockSpans.get(0);
-        Assert.assertEquals("GET", mockSpan.operationName());
+        Assert.assertEquals("HTTP GET /fail", mockSpan.operationName());
         Assert.assertEquals(6, mockSpan.tags().size());
         Assert.assertEquals(Boolean.TRUE, mockSpan.tags().get(Tags.ERROR.getKey()));
         Assert.assertEquals(501, mockSpan.tags().get(Tags.HTTP_STATUS.getKey()));
@@ -252,7 +271,7 @@ public class TracingHandlerTest extends WebTestBase {
         Assert.assertEquals(1, mockSpans.size());
 
         MockSpan mockSpan = mockSpans.get(0);
-        Assert.assertEquals("GET", mockSpan.operationName());
+        Assert.assertEquals("HTTP GET /exception", mockSpan.operationName());
         Assert.assertEquals(6, mockSpan.tags().size());
         Assert.assertEquals(Boolean.TRUE, mockSpan.tags().get(Tags.ERROR.getKey()));
         Assert.assertEquals(500, mockSpan.tags().get(Tags.HTTP_STATUS.getKey()));
@@ -282,7 +301,7 @@ public class TracingHandlerTest extends WebTestBase {
         Assert.assertEquals(1, mockSpans.size());
 
         MockSpan mockSpan = mockSpans.get(0);
-        Assert.assertEquals("GET", mockSpan.operationName());
+        Assert.assertEquals("HTTP GET /exceptionWithHandler", mockSpan.operationName());
         Assert.assertEquals(6, mockSpan.tags().size());
         Assert.assertEquals(Boolean.TRUE, mockSpan.tags().get(Tags.ERROR.getKey()));
         Assert.assertEquals(404, mockSpan.tags().get(Tags.HTTP_STATUS.getKey()));
@@ -319,7 +338,7 @@ public class TracingHandlerTest extends WebTestBase {
         Assert.assertEquals(1, mockSpans.size());
 
         MockSpan mockSpan = mockSpans.get(0);
-        Assert.assertEquals("GET", mockSpan.operationName());
+        Assert.assertEquals("HTTP GET /timeout", mockSpan.operationName());
         Assert.assertEquals(6, mockSpan.tags().size());
         Assert.assertEquals(Boolean.TRUE, mockSpan.tags().get(Tags.ERROR.getKey()));
         Assert.assertEquals(501, mockSpan.tags().get(Tags.HTTP_STATUS.getKey()));
@@ -346,7 +365,7 @@ public class TracingHandlerTest extends WebTestBase {
         Assert.assertEquals(1, mockSpans.size());
 
         MockSpan mockSpan = mockSpans.get(0);
-        Assert.assertEquals("GET", mockSpan.operationName());
+        Assert.assertEquals("HTTP GET /bodyEnd", mockSpan.operationName());
         Assert.assertEquals(5, mockSpan.tags().size());
         Assert.assertEquals(200, mockSpan.tags().get(Tags.HTTP_STATUS.getKey()));
         Assert.assertEquals("GET", mockSpan.tags().get(Tags.HTTP_METHOD.getKey()));
