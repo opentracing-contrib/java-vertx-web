@@ -24,7 +24,7 @@ import io.vertx.ext.web.RoutingContext;
  */
 public class TracingHandler implements Handler<RoutingContext> {
     private static final Logger log = LoggerFactory.getLogger(TracingHandler.class);
-    public static final String CURRENT_SPAN = TracingHandler.class.getName() + ".severSpan";
+    public static final String CURRENT_SPAN = TracingHandler.class.getName() + ".serverSpan";
 
     private final Tracer tracer;
     private final List<WebSpanDecorator> decorators;
