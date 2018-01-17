@@ -1,10 +1,14 @@
 package io.opentracing.contrib.vertx.ext.web;
 
+import io.opentracing.ActiveSpan;
+import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.contrib.vertx.ext.web.WebSpanDecorator.StandardTags;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.tag.Tags;
+import io.opentracing.util.ThreadLocalActiveSpanSource;
+import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.WebTestBase;
@@ -12,6 +16,9 @@ import io.vertx.ext.web.handler.TimeoutHandler;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+
 import org.awaitility.Awaitility;
 import org.hamcrest.core.IsEqual;
 import org.junit.Assert;
@@ -23,7 +30,7 @@ import org.junit.Test;
  */
 public class TracingHandlerTest extends WebTestBase {
 
-    protected MockTracer mockTracer = new MockTracer(MockTracer.Propagator.TEXT_MAP);
+    protected MockTracer mockTracer = new MockTracer(new ThreadLocalActiveSpanSource(), MockTracer.Propagator.TEXT_MAP);
 
     @Override
     public void setUp() throws Exception {
@@ -32,6 +39,12 @@ public class TracingHandlerTest extends WebTestBase {
         router.route()
                 .order(-1).handler(withStandardTags)
                 .failureHandler(withStandardTags);
+    }
+
+    @Override
+    protected VertxOptions getOptions() {
+        //force one event loop to make testing active-span bugs easier
+        return new VertxOptions().setEventLoopPoolSize(1);
     }
 
     @Before
@@ -352,6 +365,51 @@ public class TracingHandlerTest extends WebTestBase {
         Assert.assertEquals("GET", mockSpan.tags().get(Tags.HTTP_METHOD.getKey()));
         Assert.assertEquals("http://localhost:8080/bodyEnd", mockSpan.tags().get(Tags.HTTP_URL.getKey()));
         Assert.assertEquals(0, mockSpan.logEntries().size());
+    }
+
+    /**
+     * If someone incorrectly starts a span on an event loop, the TracingHandler was previously using it as the current
+     * active span to be a child of. Such functionality is correct in a thread-per-request environment but not
+     * in an event loop model. The tracinghandler now `ignoreActiveSpans` which is a better safeguard against the
+     * problem.
+     * 
+     */
+    @Test
+    public void testIgnoringActiveSpan() throws Exception {
+        final CountDownLatch firstLatch = new CountDownLatch(1);
+        final CountDownLatch secondLatch = new CountDownLatch(1);
+
+        router.route("/wait").handler(context -> {
+            ActiveSpan activeSpan = mockTracer.buildSpan("internal")
+                    .startActive();
+            vertx().executeBlocking((result) -> {
+                firstLatch.countDown();
+                try {
+                    awaitLatch(secondLatch);
+                } catch (InterruptedException e) {
+                    result.fail(e);
+                }
+                result.complete();
+            }, result -> {
+                activeSpan.close();
+                context.response().end();
+            });
+        });
+
+        //perform two requests -- we want to block
+        //inside the handler and make an active span.
+        request("/wait", HttpMethod.GET, 200);
+        awaitLatch(firstLatch);
+
+        request("/wait", HttpMethod.GET, 200);
+        //they should both me in the router now -- resume the latch
+        secondLatch.countDown();
+
+        Awaitility.await().until(reportedSpansSize(), IsEqual.equalTo(2));
+        for (MockSpan span : mockTracer.finishedSpans()) {
+            Assert.assertEquals(span.parentId(), 0);
+        }
+
     }
 
     protected void request(String path, HttpMethod method, int statusCode) throws InterruptedException {
