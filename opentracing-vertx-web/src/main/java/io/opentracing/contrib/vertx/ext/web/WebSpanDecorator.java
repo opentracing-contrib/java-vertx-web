@@ -4,7 +4,7 @@ import io.vertx.core.Handler;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.opentracing.BaseSpan;
+import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
@@ -21,7 +21,7 @@ public interface WebSpanDecorator {
      * @param request server request
      * @param span server span
      */
-    void onRequest(HttpServerRequest request, BaseSpan<?> span);
+    void onRequest(HttpServerRequest request, Span span);
 
     /**
      * Decorate span when span is rerouted.
@@ -29,7 +29,7 @@ public interface WebSpanDecorator {
      * @param request server request
      * @param span server span
      */
-    void onReroute(HttpServerRequest request, BaseSpan<?> span);
+    void onReroute(HttpServerRequest request, Span span);
 
     /**
      * Decorate span when the response is known. This is effectively invoked in BodyEndHandler which is added to
@@ -38,7 +38,7 @@ public interface WebSpanDecorator {
      * @param request server request
      * @param span server span
      */
-    void onResponse(HttpServerRequest request, BaseSpan<?> span);
+    void onResponse(HttpServerRequest request, Span span);
 
     /**
      * Decorate request when an exception is thrown during request processing.
@@ -47,21 +47,21 @@ public interface WebSpanDecorator {
      * @param response server response
      * @param span server span
      */
-    void onFailure(Throwable throwable, HttpServerResponse response, BaseSpan<?> span);
+    void onFailure(Throwable throwable, HttpServerResponse response, Span span);
 
     /**
      * Decorator which adds standard set of tags e.g. HTTP/PEER/ERROR tags.
      */
     class StandardTags implements WebSpanDecorator {
         @Override
-        public void onRequest(HttpServerRequest request, BaseSpan<?> span) {
+        public void onRequest(HttpServerRequest request, Span span) {
             Tags.COMPONENT.set(span, "vertx");
             Tags.HTTP_METHOD.set(span, request.method().toString());
             Tags.HTTP_URL.set(span, request.absoluteURI());
         }
 
         @Override
-        public void onReroute(HttpServerRequest request, BaseSpan<?> span) {
+        public void onReroute(HttpServerRequest request, Span span) {
             Map<String, String> logs = new HashMap<>(2);
             logs.put("event", "reroute");
             logs.put(Tags.HTTP_URL.getKey(), request.absoluteURI());
@@ -70,12 +70,12 @@ public interface WebSpanDecorator {
         }
 
         @Override
-        public void onResponse(HttpServerRequest request, BaseSpan<?> span) {
+        public void onResponse(HttpServerRequest request, Span span) {
             Tags.HTTP_STATUS.set(span, request.response().getStatusCode());
         }
 
         @Override
-        public void onFailure(Throwable throwable, HttpServerResponse response, BaseSpan<?> span) {
+        public void onFailure(Throwable throwable, HttpServerResponse response, Span span) {
             Tags.ERROR.set(span, Boolean.TRUE);
 
             if (throwable != null) {
