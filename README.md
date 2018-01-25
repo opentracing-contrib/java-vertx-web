@@ -6,6 +6,8 @@ handler which traces server requests.
 
 ## Configuration
 ```java
+Router router = Router.router(vertx);
+
 TracingHandler handler = new TracingHandler(tracer);
 router.route()
         .order(-1).handler(handler)
