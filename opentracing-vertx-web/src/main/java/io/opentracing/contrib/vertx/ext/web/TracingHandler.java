@@ -66,6 +66,7 @@ public class TracingHandler implements Handler<RoutingContext> {
 
         Span span = tracer.buildSpan(routingContext.request().method().toString())
                 .asChildOf(extractedContext)
+                .ignoreActiveSpan() // important since we are on event loop
                 .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_SERVER)
                 .startManual();
 
