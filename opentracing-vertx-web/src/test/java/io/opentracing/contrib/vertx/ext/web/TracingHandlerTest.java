@@ -1,36 +1,34 @@
 package io.opentracing.contrib.vertx.ext.web;
 
-import io.opentracing.ActiveSpan;
-import io.opentracing.Span;
+import io.opentracing.Scope;
 import io.opentracing.SpanContext;
 import io.opentracing.contrib.vertx.ext.web.WebSpanDecorator.StandardTags;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.tag.Tags;
-import io.opentracing.util.ThreadLocalActiveSpanSource;
+import io.opentracing.util.ThreadLocalScopeManager;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.WebTestBase;
 import io.vertx.ext.web.handler.TimeoutHandler;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-
 import org.awaitility.Awaitility;
 import org.hamcrest.core.IsEqual;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+
 /**
  * @author Pavol Loffay
  */
 public class TracingHandlerTest extends WebTestBase {
 
-    protected MockTracer mockTracer = new MockTracer(new ThreadLocalActiveSpanSource(), MockTracer.Propagator.TEXT_MAP);
+    protected MockTracer mockTracer = new MockTracer(new ThreadLocalScopeManager(), MockTracer.Propagator.TEXT_MAP);
 
     @Override
     public void setUp() throws Exception {
@@ -380,8 +378,8 @@ public class TracingHandlerTest extends WebTestBase {
         final CountDownLatch secondLatch = new CountDownLatch(1);
 
         router.route("/wait").handler(context -> {
-            ActiveSpan activeSpan = mockTracer.buildSpan("internal")
-                    .startActive();
+            Scope scope = mockTracer.buildSpan("internal")
+                    .startActive(true);
             vertx().executeBlocking((result) -> {
                 firstLatch.countDown();
                 try {
@@ -391,7 +389,7 @@ public class TracingHandlerTest extends WebTestBase {
                 }
                 result.complete();
             }, result -> {
-                activeSpan.close();
+                scope.close();
                 context.response().end();
             });
         });
