@@ -1,6 +1,7 @@
 package io.opentracing.contrib.vertx.ext.web;
 
 import io.opentracing.Scope;
+import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.contrib.vertx.ext.web.WebSpanDecorator.StandardTags;
 import io.opentracing.mock.MockSpan;
@@ -208,7 +209,7 @@ public class TracingHandlerTest extends WebTestBase {
                 io.opentracing.Tracer.SpanBuilder spanBuilder = mockTracer.buildSpan("localSpan");
 
                 spanBuilder.asChildOf(serverSpanContext)
-                        .startManual()
+                        .start()
                         .finish();
 
                 routingContext.response()
@@ -378,8 +379,9 @@ public class TracingHandlerTest extends WebTestBase {
         final CountDownLatch secondLatch = new CountDownLatch(1);
 
         router.route("/wait").handler(context -> {
-            Scope scope = mockTracer.buildSpan("internal")
-                    .startActive(true);
+            Span span = mockTracer.buildSpan("internal")
+                    .start();
+            Scope scope = mockTracer.scopeManager().activate(span);
             vertx().executeBlocking((result) -> {
                 firstLatch.countDown();
                 try {
