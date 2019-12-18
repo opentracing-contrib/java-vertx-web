@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.opentracing.contrib</groupId>
   <artifactId>opentracing-vertx-web-parent</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>${project.groupId}:${project.artifactId}</name>
@@ -14,7 +14,7 @@
     <url>https://github.com/opentracing-contrib/java-vertx-web</url>
     <connection>scm:git:https://github.com/opentracing-contrib/java-vertx-web.git</connection>
     <developerConnection>scm:git:https://github.com/opentracing-contrib/java-vertx-web.git</developerConnection>
-    <tag>1.0.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <licenses>
