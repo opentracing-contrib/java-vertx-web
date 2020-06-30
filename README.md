@@ -19,7 +19,7 @@ router.route()
 Because Vert.x is event loop based, thread local implementations of span source do not work.
 The current solution is to get span context from `RoutingContext` and then pass it manually around.
 ```java
-SpanContext serverContext = TracingFilter.serverSpanContext(routingContext);
+SpanContext serverContext = TracingHandler.serverSpanContext(routingContext);
 ```
 
 ## Development
