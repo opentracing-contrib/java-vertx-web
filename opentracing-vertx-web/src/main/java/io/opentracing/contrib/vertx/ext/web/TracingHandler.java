@@ -91,7 +91,7 @@ public class TracingHandler implements Handler<RoutingContext> {
         routingContext.next();
     }
 
-    private Handler<Void> finishEndHandler(RoutingContext routingContext, Span span) {
+    protected final Handler<Void> finishEndHandler(RoutingContext routingContext, Span span) {
         return handler -> {
             decorators.forEach(spanDecorator ->
                     spanDecorator.onResponse(routingContext.request(), span));
