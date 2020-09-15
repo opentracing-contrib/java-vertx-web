@@ -4,6 +4,24 @@
 OpenTracing instrumentation for Vert.x Web project. This repository currently contains
 handler which traces server requests.
 
+## Maven
+
+```xml
+<dependency>
+        <groupId>io.opentracing.contrib</groupId>
+        <artifactId>opentracing-vertx-web</artifactId>
+        <version>${version}</version>
+</dependency>
+
+## Jaeger
+
+<dependency>
+        <groupId>io.jaegertracing</groupId>
+        <artifactId>jaeger-client</artifactId>
+        <version>${version}</version>
+</dependency>
+```
+
 ## Configuration
 ```java
 Router router = Router.router(vertx);
