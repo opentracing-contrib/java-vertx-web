@@ -12,9 +12,11 @@ handler which traces server requests.
         <artifactId>opentracing-vertx-web</artifactId>
         <version>${version}</version>
 </dependency>
+```
 
 ## Jaeger
 
+```xml
 <dependency>
         <groupId>io.jaegertracing</groupId>
         <artifactId>jaeger-client</artifactId>
@@ -25,6 +27,9 @@ handler which traces server requests.
 ## Configuration
 ```java
 Router router = Router.router(vertx);
+
+Tracer tracer = Configuration.fromEnv().getTracer();
+GlobalTracer.registerIfAbsent(tracer);
 
 TracingHandler handler = new TracingHandler(tracer);
 router.route()
