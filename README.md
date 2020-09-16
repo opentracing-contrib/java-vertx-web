@@ -16,6 +16,8 @@ handler which traces server requests.
 
 ## Jaeger
 
+To configure Jaeger, first, you need to add the dependency as shown below:
+
 ```xml
 <dependency>
         <groupId>io.jaegertracing</groupId>
@@ -24,12 +26,18 @@ handler which traces server requests.
 </dependency>
 ```
 
+Second, you need to configure the Tracer as shown below:
+
+```java
+Tracer tracer = Configuration.fromEnv().getTracer();
+GlobalTracer.registerIfAbsent(tracer);
+```
+
+> See the full documentation about [Jaeger Tracing Instrumentation Library for Java!](https://github.com/jaegertracing/jaeger-client-java)
+
 ## Configuration
 ```java
 Router router = Router.router(vertx);
-
-Tracer tracer = Configuration.fromEnv().getTracer();
-GlobalTracer.registerIfAbsent(tracer);
 
 TracingHandler handler = new TracingHandler(tracer);
 router.route()
