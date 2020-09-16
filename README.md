@@ -4,6 +4,37 @@
 OpenTracing instrumentation for Vert.x Web project. This repository currently contains
 handler which traces server requests.
 
+## Maven
+
+```xml
+<dependency>
+        <groupId>io.opentracing.contrib</groupId>
+        <artifactId>opentracing-vertx-web</artifactId>
+        <version>${version}</version>
+</dependency>
+```
+
+## Jaeger
+
+To configure Jaeger, first, you need to add the dependency as shown below:
+
+```xml
+<dependency>
+        <groupId>io.jaegertracing</groupId>
+        <artifactId>jaeger-client</artifactId>
+        <version>${version}</version>
+</dependency>
+```
+
+Second, you need to configure the Tracer as shown below:
+
+```java
+Tracer tracer = Configuration.fromEnv().getTracer();
+GlobalTracer.registerIfAbsent(tracer);
+```
+
+> See the full documentation about [Jaeger Tracing Instrumentation Library for Java!](https://github.com/jaegertracing/jaeger-client-java)
+
 ## Configuration
 ```java
 Router router = Router.router(vertx);
